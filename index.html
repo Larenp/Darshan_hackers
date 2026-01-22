@@ -2,15 +2,206 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Calculator</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+        }
+
+        .calculator {
+            width: 340px;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 25px 60px rgba(0, 0, 0, 0.3);
+        }
+
+        .display {
+            background: rgba(255, 255, 255, 0.25);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 20px;
+            text-align: right;
+            color: #fff;
+        }
+
+        .display .previous {
+            font-size: 14px;
+            opacity: 0.7;
+            min-height: 18px;
+        }
+
+        .display .current {
+            font-size: 32px;
+            font-weight: 700;
+            word-wrap: break-word;
+        }
+
+        .buttons {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        button {
+            padding: 16px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 14px;
+            border: none;
+            cursor: pointer;
+            color: #fff;
+            background: rgba(255, 255, 255, 0.2);
+            transition: transform 0.15s ease, background 0.15s ease;
+        }
+
+        button:hover {
+            background: rgba(255, 255, 255, 0.35);
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        .operator {
+            background: rgba(255, 140, 0, 0.7);
+        }
+
+        .operator:hover {
+            background: rgba(255, 140, 0, 0.9);
+        }
+
+        .equals {
+            grid-column: span 2;
+            background: #00d4ff;
+            color: #003344;
+        }
+
+        .equals:hover {
+            background: #00e5ff;
+        }
+
+        .clear {
+            background: rgba(255, 80, 80, 0.8);
+        }
+
+        .clear:hover {
+            background: rgba(255, 80, 80, 1);
+        }
+    </style>
 </head>
 
 <body>
-    <h2>poihepojherqojepfaeoeopjpeoffep Lorem ipsum dolor sit amet consectetur, adipisicing elit. Aut saepe id omnis
-        iusto blanditiis magnam, delectus tempore labore perspiciatis laborum adipisci veniam quam veritatis ab vel
-        cumque accusantium modi. Ducimus.</h2>
+
+    <div class="calculator">
+        <div class="display">
+            <div class="previous" id="previous"></div>
+            <div class="current" id="current">0</div>
+        </div>
+
+        <div class="buttons">
+            <button class="clear" onclick="clearAll()">C</button>
+            <button onclick="deleteLast()">⌫</button>
+            <button class="operator" onclick="chooseOperator('/')">÷</button>
+            <button class="operator" onclick="chooseOperator('*')">×</button>
+
+            <button onclick="appendNumber('7')">7</button>
+            <button onclick="appendNumber('8')">8</button>
+            <button onclick="appendNumber('9')">9</button>
+            <button class="operator" onclick="chooseOperator('-')">−</button>
+
+            <button onclick="appendNumber('4')">4</button>
+            <button onclick="appendNumber('5')">5</button>
+            <button onclick="appendNumber('6')">6</button>
+            <button class="operator" onclick="chooseOperator('+')">+</button>
+
+            <button onclick="appendNumber('1')">1</button>
+            <button onclick="appendNumber('2')">2</button>
+            <button onclick="appendNumber('3')">3</button>
+            <button class="equals" onclick="compute()">=</button>
+
+            <button onclick="appendNumber('0')">0</button>
+            <button onclick="appendNumber('.')">.</button>
+        </div>
+    </div>
+
+    <script>
+        let current = '';
+        let previous = '';
+        let operator = null;
+
+        const currentDisplay = document.getElementById('current');
+        const previousDisplay = document.getElementById('previous');
+
+        function appendNumber(number) {
+            if (number === '.' && current.includes('.')) return;
+            current += number;
+            updateDisplay();
+        }
+
+        function chooseOperator(op) {
+            if (current === '') return;
+            if (previous !== '') compute();
+            operator = op;
+            previous = current;
+            current = '';
+            updateDisplay();
+        }
+
+        function compute() {
+            let result;
+            const prev = parseFloat(previous);
+            const curr = parseFloat(current);
+            if (isNaN(prev) || isNaN(curr)) return;
+
+            switch (operator) {
+                case '+': result = prev + curr; break;
+                case '-': result = prev - curr; break;
+                case '*': result = prev * curr; break;
+                case '/': result = prev / curr; break;
+                default: return;
+            }
+
+            current = result.toString();
+            operator = null;
+            previous = '';
+            updateDisplay();
+        }
+
+        function clearAll() {
+            current = '';
+            previous = '';
+            operator = null;
+            updateDisplay();
+        }
+
+        function deleteLast() {
+            current = current.slice(0, -1);
+            updateDisplay();
+        }
+
+        function updateDisplay() {
+            currentDisplay.textContent = current || '0';
+            previousDisplay.textContent = operator ? `${previous} ${operator}` : '';
+        }
+    </script>
+
 </body>
 
 </html>
